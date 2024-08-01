@@ -10,7 +10,7 @@ import { WrapperType } from '../WrapperType';
 
 export class OperatorExpressionNode extends FormulaNode {
 
-  private _operator: Operator;
+  private _operator: Operator = Operator.EQUALS;
 
   private typeA: Type | null = null;
   private typeB: Type | null = null;
@@ -18,7 +18,6 @@ export class OperatorExpressionNode extends FormulaNode {
 
   constructor(operator?: Operator) {
     super('OperatorExpression');
-    this._operator = operator ?? Operator.EQUALS;
     const socketA = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
     const inputA = new ClassicPreset.Input(socketA, 'A');
     this.outputSocket = new AdvancedSocket(new WrapperType(new MixedType()));
@@ -27,6 +26,7 @@ export class OperatorExpressionNode extends FormulaNode {
     this.addInput('a', inputA);
     socketA.addListener('onConnectionChanged', (e) => this.connectionChanged(e));
     this.setAvailableOperators(OperatorHelper.getAllOperators());
+    this.operator = operator ?? Operator.EQUALS;
   }
 
   connectionChanged(e: OnConnectionChangedEvent<WrapperType>) {

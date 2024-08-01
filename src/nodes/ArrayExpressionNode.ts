@@ -19,7 +19,7 @@ export class ArrayExpressionNode extends EnumeratedNode {
     let i = 0;
     for (const key in inputs) {
       if (!Object.prototype.hasOwnProperty.call(inputs, key)) continue;
-      const validated = this.validateInput(key, inputs[key], stringValidator);
+      const validated = this.validateInput(key, inputs[key][0], stringValidator);
       output += del + validated;
       del = ', ';
       i++;

@@ -1,6 +1,6 @@
 {
   "name": "rete-formula-editor",
-  "version": "0.1.18",
+  "version": "0.1.22",
   "description": "An extension of the rete NodeEditor class to implements the core features of formula",
   "scripts": {
     "build": "tsup ./src/index.ts --dts --format esm",

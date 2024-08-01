@@ -24,7 +24,6 @@ export abstract class EnumeratedNode extends FormulaNode {
     const inputIndex = this.argumentInputs.length;
     const socket = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
     socket.addListener('onConnectionChanged', (e) => {
-      console.log(e, inputIndex, this.argumentInputs.length - 1);
       if (inputIndex === this.argumentInputs.length - 1 && e.oldConnection === null) { // last got connected
         this.addNextInput();
       }

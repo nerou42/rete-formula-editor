@@ -29,7 +29,7 @@ export type OperatorExpressionMeta = GenericVSNodeMeta<"OperatorExpression", { o
 export type TernaryExpressionMeta = GenericVSNodeMeta<"TernaryExpression">;
 export type TypeExpressionMeta = GenericVSNodeMeta<"TypeExpression", { type: TypeDescription }>;
 
-export type VSNodeMeta = ArgumentListExpressionMeta | ArrayExpressionMeta | BracketExpressionMeta |  ConstantExpressionMeta |  IdentifierExpressionMeta | MemberAccsessExpressionMeta | OperatorExpressionMeta | TernaryExpressionMeta | TypeExpressionMeta;
+export type VSNodeMeta = ArgumentListExpressionMeta | ArrayExpressionMeta | BracketExpressionMeta | ConstantExpressionMeta | IdentifierExpressionMeta | MemberAccsessExpressionMeta | OperatorExpressionMeta | TernaryExpressionMeta | TypeExpressionMeta;
 
 export async function addNodeTreeToEditor(editor: NodeEditor<FormulaScheme>, resultNode: ResultNode, nodeMeta: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser) {
   const finalNode = await parseNodeTree(editor, nodeMeta, scope, typeParser, controlFactory);
@@ -38,35 +38,35 @@ export async function addNodeTreeToEditor(editor: NodeEditor<FormulaScheme>, res
 }
 
 async function parseNodeTree(editor: NodeEditor<FormulaScheme>, nodeMeta: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser): Promise<FormulaNode> {
-  const node = buildNode(nodeMeta, scope, typeParser, controlFactory);
-  await editor.addNode(node);
-  for (let i = 0; i < nodeMeta.connected.length; i++) {
-    const connectedNode = await parseNodeTree(editor, nodeMeta.connected[i], scope, typeParser, controlFactory);
-    const connection = new ClassicPreset.Connection(connectedNode, 'output', node, Object.keys(node.inputs)[i]);
+  const result = buildNode(nodeMeta, scope, typeParser, controlFactory);
+  await editor.addNode(result.node);
+  for (let i = 0; i < result.connected.length; i++) {
+    const connectedNode = await parseNodeTree(editor, result.connected[i], scope, typeParser, controlFactory);
+    const connection = new ClassicPreset.Connection(connectedNode, 'output', result.node, Object.keys(result.node.inputs)[i]);
     await editor.addConnection(connection);
   }
-  return node;
+  return result.node;
 }
 
-function buildNode(rootNode: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser): FormulaNode {
-  switch(rootNode.nodeType) {
+function buildNode(rootNode: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser): { node: FormulaNode, connected: VSNodeMeta[] } {
+  switch (rootNode.nodeType) {
     case 'ArgumentListExpression':
-      return new ArgumentListExpressionNode();
+      return { connected: rootNode.connected, node: new ArgumentListExpressionNode() };
     case 'ArrayExpression':
-      return new ArrayExpressionNode();
+      return { connected: rootNode.connected, node: new ArrayExpressionNode()};
     case 'BracketExpression':
       return buildNode(rootNode.connected[0], scope, typeParser, controlFactory);
     case 'ConstantExpression':
-      return new ConstantExpressionNode(controlFactory, typeParser.parseType(rootNode.properties.type), rootNode.properties.value);
+      return { connected: rootNode.connected, node: new ConstantExpressionNode(controlFactory, typeParser.parseType(rootNode.properties.type), rootNode.properties.value) };
     case 'IdentifierExpression':
-      return new IdentifierExpressionNode(scope, rootNode.properties.identifier);
+      return { connected: rootNode.connected, node: new IdentifierExpressionNode(scope, rootNode.properties.identifier) };
     case 'MemberAccsessExpression':
-      return new MemberAccsessNode(rootNode.properties.identifier);
+      return { connected: rootNode.connected, node: new MemberAccsessNode(rootNode.properties.identifier) };
     case 'OperatorExpression':
-      return new OperatorExpressionNode(OperatorParser.parseOperator(rootNode.properties.operator));
+      return { connected: rootNode.connected, node: new OperatorExpressionNode(OperatorParser.parseOperator(rootNode.properties.operator)) };
     case 'TernaryExpression':
-      return new TernaryExpressionNode();
+      return { connected: rootNode.connected, node: new TernaryExpressionNode() };
     case 'TypeExpression':
-      return new ConstantTypeNode(typeParser.parseType(rootNode.properties.type));
+      return { connected: rootNode.connected, node: new ConstantTypeNode(typeParser.parseType(rootNode.properties.type)) };
   }
 }
