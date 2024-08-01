@@ -3,6 +3,7 @@ import { StringControl } from '../controls/StringControl';
 import { MemberAccsessType, Type } from 'formula-ts-helper';
 import { FormulaNode } from './FormulaNode';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export class MemberAccsessNode extends FormulaNode {
 
@@ -12,7 +13,7 @@ export class MemberAccsessNode extends FormulaNode {
     super('MemberAccsess');
     this.memberControl = new StringControl(member);
     this.addControl('member', this.memberControl);
-    const socket = new AdvancedSocket<Type>(new MemberAccsessType(this.memberControl.value));
+    const socket = new AdvancedSocket<WrapperType>(new WrapperType(new MemberAccsessType(this.memberControl.value)));
     const output = new ClassicPreset.Output(socket);
     this.addOutput('output', output);
   }

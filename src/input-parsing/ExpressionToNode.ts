@@ -34,8 +34,7 @@ export type VSNodeMeta = ArgumentListExpressionMeta | ArrayExpressionMeta | Brac
 export async function addNodeTreeToEditor(editor: NodeEditor<FormulaScheme>, resultNode: ResultNode, nodeMeta: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser) {
   const finalNode = await parseNodeTree(editor, nodeMeta, scope, typeParser, controlFactory);
   const connection = new ClassicPreset.Connection(finalNode, 'output', resultNode, 'input');
-  editor.addConnection(connection);
-  return resultNode;
+  await editor.addConnection(connection);
 }
 
 async function parseNodeTree(editor: NodeEditor<FormulaScheme>, nodeMeta: VSNodeMeta, scope: Scope, typeParser: GenericTypeParser, controlFactory: GenericConstantValueParser): Promise<FormulaNode> {

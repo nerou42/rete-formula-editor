@@ -5,6 +5,10 @@ export class IntegerControl extends FormulaControl<number> {
     return value + '';
   }
 
+  isValid(value: number): boolean {
+    return value >= 0;
+  }
+
   setFromSource(source: string): void {
     const numeric = parseInt(source);
     if (!Number.isNaN(numeric)) {

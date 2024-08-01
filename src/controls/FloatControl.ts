@@ -1,12 +1,16 @@
-import { FormulaControl } from "./FormulaControl";
+import { FormulaControl } from './FormulaControl';
 
 export class FloatControl extends FormulaControl<number> {
   override getSource(value: number): string {
-    if(!(value + '').includes('.')) {
+    if (!(value + '').includes('.')) {
       return value + '.0';
     } else {
       return value + '';
     }
+  }
+
+  isValid(value: number): boolean {
+    return value >= 0;
   }
 
   setFromSource(source: string): void {

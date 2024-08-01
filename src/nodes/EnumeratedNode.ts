@@ -2,26 +2,27 @@ import { MixedType, Type } from 'formula-ts-helper';
 import { ClassicPreset } from 'rete';
 import { FormulaNode } from './FormulaNode';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export abstract class EnumeratedNode extends FormulaNode {
 
-  private readonly outputSocket: AdvancedSocket<Type>;
+  private readonly outputSocket: AdvancedSocket<WrapperType>;
 
-  protected argumentInputs: ClassicPreset.Input<AdvancedSocket<Type>>[] = [];
+  protected argumentInputs: ClassicPreset.Input<AdvancedSocket<WrapperType>>[] = [];
 
-  protected argumentTypes: Type[] = [];
+  protected argumentTypes: WrapperType[] = [];
 
   constructor(name: string) {
     super(name);
     this.addNextInput();
-    this.outputSocket = new AdvancedSocket<Type>(this.getType());
+    this.outputSocket = new AdvancedSocket<WrapperType>(this.getType());
     const output = new ClassicPreset.Output(this.outputSocket);
     this.addOutput('output', output);
   }
 
   private addNextInput(): void {
     const inputIndex = this.argumentInputs.length;
-    const socket = new AdvancedSocket<Type>(new MixedType());
+    const socket = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
     socket.addListener('onConnectionChanged', (e) => {
       console.log(e, inputIndex, this.argumentInputs.length - 1);
       if (inputIndex === this.argumentInputs.length - 1 && e.oldConnection === null) { // last got connected
@@ -40,7 +41,7 @@ export abstract class EnumeratedNode extends FormulaNode {
     this.argumentInputs.push(input);
   }
 
-  protected abstract getType(): Type;
+  protected abstract getType(): WrapperType;
 
   private removeLastUnconnectedInputs(): void {
     let id = this.argumentInputs.length - 1;

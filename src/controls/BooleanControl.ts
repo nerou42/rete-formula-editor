@@ -6,6 +6,10 @@ export class BooleanControl extends FormulaControl<boolean> {
     return value ? 'true' : 'false';
   }
 
+  isValid(value: boolean): boolean {
+    return true;
+  }
+
   setFromSource(source: string): void {
     if (source === 'true') {
       this.value = true;

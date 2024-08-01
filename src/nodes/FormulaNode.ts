@@ -1,17 +1,18 @@
 import { Control, NonUndefined, TransformTypes, TypeValidator, TypeValidators } from "../types";
 import { InvalidNodeError } from "../invalidNodeError";
-import { Type } from "formula-ts-helper";
 import { AdvancedSocket } from "rete-advanced-sockets-plugin";
 import { AutoUpdateNode } from "../dead-connection-removal-plugin/AutoUpdateNode";
+import { WrapperType } from "../WrapperType";
+import { Type } from "formula-ts-helper";
 
 export abstract class FormulaNode<Inputs extends {
-  [key in string]?: AdvancedSocket<Type>;
+  [key in string]?: AdvancedSocket<WrapperType>;
 } = {
-    [key in string]?: AdvancedSocket<Type>;
+    [key in string]?: AdvancedSocket<WrapperType>;
   }, Outputs extends {
-    [key in string]?: AdvancedSocket<Type>;
+    [key in string]?: AdvancedSocket<WrapperType>;
   } = {
-    [key in string]?: AdvancedSocket<Type>;
+    [key in string]?: AdvancedSocket<WrapperType>;
   }, Controls extends {
     [key in string]?: Control;
   } = {

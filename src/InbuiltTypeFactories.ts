@@ -3,23 +3,24 @@ import { TypeFactory, TypeMeta } from "./nodes/TypeNode";
 import { ClassicPreset } from "rete";
 import { TypeValidator, typeValidator } from "./types";
 import { AdvancedSocket } from "rete-advanced-sockets-plugin";
+import { WrapperType } from "./WrapperType";
 
 const arrayFactory: TypeFactory<Record<'elementsType', TypeValidator<Type>>> = {
-  inputs: { elementsType: () => new ClassicPreset.Input(new AdvancedSocket<Type>(new TypeType(new MixedType())), 'Elements type') },
+  inputs: { elementsType: () => new ClassicPreset.Input(new AdvancedSocket<WrapperType>(new WrapperType(new TypeType(new MixedType()))), 'Elements type') },
   inputValidators: { elementsType: typeValidator },
   factory: (data) => new ArrayType(new IntegerType(), (data.elementsType as TypeType).getType()),
 }
 
 const typeTypeFactory: TypeFactory<Record<'type', TypeValidator<Type>>> = {
-  inputs: { type: () => new ClassicPreset.Input(new AdvancedSocket<Type>(new TypeType(new MixedType())), 'Type') },
+  inputs: { type: () => new ClassicPreset.Input(new AdvancedSocket<WrapperType>(new WrapperType(new TypeType(new MixedType()))), 'Type') },
   inputValidators: { type: typeValidator },
   factory: (data) => new TypeType((data.type as TypeType).getType()),
 }
 
 const compoundTypeFactory: TypeFactory<Record<'typeA' | 'typeB', TypeValidator<Type>>> = {
   inputs: {
-    typeA: () => new ClassicPreset.Input(new AdvancedSocket<Type>(new TypeType(new MixedType())), 'Type A'),
-    typeB: () => new ClassicPreset.Input(new AdvancedSocket<Type>(new TypeType(new MixedType())), 'Type B'),
+    typeA: () => new ClassicPreset.Input(new AdvancedSocket<WrapperType>(new WrapperType(new TypeType(new MixedType()))), 'Type A'),
+    typeB: () => new ClassicPreset.Input(new AdvancedSocket<WrapperType>(new WrapperType(new TypeType(new MixedType()))), 'Type B'),
   },
   inputValidators: { typeA: typeValidator, typeB: typeValidator },
   factory: (data) => CompoundType.buildFromTypes([(data.typeA as TypeType).getType(), (data.typeB as TypeType).getType()]),

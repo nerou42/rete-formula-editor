@@ -1,6 +1,7 @@
 import { OuterFunctionArgument, OuterFunctionArgumentListType, Type } from 'formula-ts-helper';
 import { EnumeratedNode } from './EnumeratedNode';
 import { stringValidator } from '../types';
+import { WrapperType } from '../WrapperType';
 
 export class ArgumentListExpressionNode extends EnumeratedNode {
 
@@ -8,12 +9,12 @@ export class ArgumentListExpressionNode extends EnumeratedNode {
     super('ArgumentListExpression');
   }
 
-  getType(): Type {
+  getType(): WrapperType {
     const outerArguments = [];
     for (const type of this.argumentTypes) {
-      outerArguments.push(new OuterFunctionArgument(type, false, false));
+      outerArguments.push(new OuterFunctionArgument(type.type, false, false));
     }
-    return new OuterFunctionArgumentListType(outerArguments, false);
+    return new WrapperType(new OuterFunctionArgumentListType(outerArguments, false));
   }
 
   override data(inputs: Record<string, any>): { output: string } {

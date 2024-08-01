@@ -6,6 +6,7 @@ import { InvalidNodeError } from '../invalidNodeError';
 import { FormulaNode } from './FormulaNode';
 import { OnConnectionChangedEvent } from 'rete-advanced-sockets-plugin';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export class OperatorExpressionNode extends FormulaNode {
 
@@ -13,14 +14,14 @@ export class OperatorExpressionNode extends FormulaNode {
 
   private typeA: Type | null = null;
   private typeB: Type | null = null;
-  private outputSocket: AdvancedSocket<Type>;
+  private outputSocket: AdvancedSocket<WrapperType>;
 
   constructor(operator?: Operator) {
     super('OperatorExpression');
     this._operator = operator ?? Operator.EQUALS;
-    const socketA = new AdvancedSocket<Type>(new MixedType());
+    const socketA = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
     const inputA = new ClassicPreset.Input(socketA, 'A');
-    this.outputSocket = new AdvancedSocket(new MixedType());
+    this.outputSocket = new AdvancedSocket(new WrapperType(new MixedType()));
     const output = new ClassicPreset.Output(this.outputSocket);
     this.addOutput('output', output);
     this.addInput('a', inputA);
@@ -28,13 +29,12 @@ export class OperatorExpressionNode extends FormulaNode {
     this.setAvailableOperators(OperatorHelper.getAllOperators());
   }
 
-  connectionChanged(e: OnConnectionChangedEvent<Type>) {
-    console.log('connectionChanged A');
+  connectionChanged(e: OnConnectionChangedEvent<WrapperType>) {
     if (e.newConnection === null) {
       this.removeInputB();
       return;
     }
-    this.typeA = e.newConnection.otherSocket.type;
+    this.typeA = e.newConnection.otherSocket.type.type;
     this.setAvailableOperators(this.typeA.getImplementedOperators());
   }
 
@@ -61,8 +61,8 @@ export class OperatorExpressionNode extends FormulaNode {
   }
 
   private updateOutput(): void {
-    let resultType = this.typeA?.getOperatorResultType(this.operator!, this.typeB) ?? new MixedType();
-    this.outputSocket.type = resultType;
+    let resultType = this.typeA?.getOperatorResultType(this.operator, this.typeB) ?? new MixedType();
+    this.outputSocket.type = new WrapperType(resultType);
   }
 
   set operator(operator: Operator) {
@@ -82,7 +82,6 @@ export class OperatorExpressionNode extends FormulaNode {
   private removeInputB(): void {
     if (this.hasInput('b')) {
       this.removeInput('b');
-      console.log('removed B');
     }
     this.typeB = null;
   }
@@ -94,19 +93,19 @@ export class OperatorExpressionNode extends FormulaNode {
     }
     const compounType = CompoundType.buildFromTypes(compatibleTypes);
     if (this.inputs['b']?.socket) {
-      this.inputs['b'].socket.type = compounType;
-      this.typeB = this.inputs['b'].socket.connectionInfo?.otherSocket.type ?? null;
+      this.inputs['b'].socket.type = new WrapperType(compounType);
+      this.typeB = this.inputs['b'].socket.connectionInfo?.otherSocket.type.type ?? null;
       this.updateOutput();
       return;
     }
     this.removeInputB();
-    const socket = new AdvancedSocket(compounType);
-    socket.addListener('onConnectionChanged', (e: OnConnectionChangedEvent<Type>) => {
+    const socket = new AdvancedSocket(new WrapperType(compounType));
+    socket.addListener('onConnectionChanged', (e: OnConnectionChangedEvent<WrapperType>) => {
       if (e.newConnection === null) {
         this.typeB = null;
         return;
       }
-      this.typeB = e.newConnection.otherSocket.type;
+      this.typeB = e.newConnection.otherSocket.type.type;
       this.updateOutput();
     });
     const input = new ClassicPreset.Input(socket, 'B');

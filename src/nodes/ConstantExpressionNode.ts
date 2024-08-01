@@ -4,6 +4,7 @@ import { ClassicPreset } from 'rete';
 import { FormulaControl } from '../controls/FormulaControl';
 import { FormulaNode } from './FormulaNode';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export class ConstantExpressionNode extends FormulaNode {
 
@@ -13,10 +14,7 @@ export class ConstantExpressionNode extends FormulaNode {
     super(type.toString() + ' Constant');
     this.control = controlFactory.parseConstantValue(type, value);
     this.addControl('', this.control);
-    const socket = new AdvancedSocket<Type>(type);
-    
-    // const input = new ClassicPreset.Input(socket);
-    // this.addInput('input', input);
+    const socket = new AdvancedSocket<WrapperType>(new WrapperType(type));
     this.addOutput('output', new ClassicPreset.Output(socket, 'value'));
   }
 

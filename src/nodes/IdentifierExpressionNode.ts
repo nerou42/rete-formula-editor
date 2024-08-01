@@ -5,6 +5,7 @@ import { FormulaNode } from './FormulaNode';
 import { InvalidNodeError } from '../invalidNodeError';
 import { Scope } from '../types';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export class IdentifierExpressionNode extends FormulaNode {
 
@@ -18,9 +19,10 @@ export class IdentifierExpressionNode extends FormulaNode {
         options.push({ label: key, value: key });
       }
     }
-    const socket = new AdvancedSocket<Type>(new MixedType());
+    const socket = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
     const output = new ClassicPreset.Output(socket, 'output');
     this.identifierControl = new SelectControl(options);
+    this.identifierControl.addChangeListener((value) => value !== undefined ? socket.type = new WrapperType(scope[value]) : null);
     if(selectedIdentifier) {
       this.identifierControl.value = selectedIdentifier;
     }

@@ -3,25 +3,26 @@ import { stringValidator } from '../types';
 import { ClassicPreset } from 'rete';
 import { FormulaNode } from './FormulaNode';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export class TernaryExpressionNode extends FormulaNode {
 
   constructor() {
     super('TernaryExpression');
-    const outputSocket = new AdvancedSocket<Type>(new NeverType());
-    const conditionSocket = new AdvancedSocket<Type>(new BooleanType());
-    const thenSocket = new AdvancedSocket<Type>(new MixedType());
-    const elseSocket = new AdvancedSocket<Type>(new MixedType());
+    const outputSocket = new AdvancedSocket<WrapperType>(new WrapperType(new NeverType()));
+    const conditionSocket = new AdvancedSocket<WrapperType>(new WrapperType(new BooleanType()));
+    const thenSocket = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
+    const elseSocket = new AdvancedSocket<WrapperType>(new WrapperType(new MixedType()));
 
     const updateOutputType = () => {
       const types: Type[] = [];
       if (thenSocket.connectionInfo?.otherSocket) {
-        types.push(thenSocket.connectionInfo.otherSocket.type as Type);
+        types.push(thenSocket.connectionInfo.otherSocket.type.type);
       }
       if (elseSocket.connectionInfo?.otherSocket) {
-        types.push(elseSocket.connectionInfo.otherSocket.type as Type);
+        types.push(elseSocket.connectionInfo.otherSocket.type.type);
       }
-      outputSocket.type = CompoundType.buildFromTypes(types);
+      outputSocket.type = new WrapperType(CompoundType.buildFromTypes(types));
     }
 
     thenSocket.addListener('onConnectionChanged', updateOutputType);

@@ -2,6 +2,7 @@ import { ArrayType, CompoundType, IntegerType, OuterFunctionArgument, OuterFunct
 import { EnumeratedNode } from './EnumeratedNode';
 import { InvalidNodeError } from '../invalidNodeError';
 import { stringValidator } from '../types';
+import { WrapperType } from '../WrapperType';
 
 export class ArrayExpressionNode extends EnumeratedNode {
 
@@ -9,8 +10,8 @@ export class ArrayExpressionNode extends EnumeratedNode {
     super('ArrayExpression');
   }
 
-  getType(): Type {
-    return new ArrayType(new IntegerType(), CompoundType.buildFromTypes(this.argumentTypes));
+  getType(): WrapperType {
+    return new WrapperType(new ArrayType(new IntegerType(), CompoundType.buildFromTypes(this.argumentTypes.map(t => t.type))));
   }
 
   override data(inputs: Record<string, any>): { output: string } {

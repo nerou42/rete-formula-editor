@@ -1,9 +1,10 @@
 {
   "name": "rete-formula-editor",
-  "version": "0.1.0",
+  "version": "0.1.18",
   "description": "An extension of the rete NodeEditor class to implements the core features of formula",
   "scripts": {
     "build": "tsup ./src/index.ts --dts --format esm",
+    "test": "jest --coverage",
     "lint": "rete lint"
   },
   "author": "Timo Lehnertz",
@@ -12,15 +13,17 @@
     "rete": "^2.0.0"
   },
   "devDependencies": {
-    "rete": "^2.0.0",
     "rete-cli": "^1.0.3",
     "tsup": "^8.2.3",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.2"
   },
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "formula-ts-helper": "^1.0.18",
+    "formula-ts-helper": "^1.0.20",
     "rete-advanced-sockets-plugin": "^0.1.7",
     "rete-context-menu-plugin": "^2.0.3",
     "rete-engine": "^2.0.1"

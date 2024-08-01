@@ -1,9 +1,11 @@
-import { BooleanType, FloatType, IntegerType, StringType, Type } from "formula-ts-helper";
+import { BooleanType, DateIntervalType, DateTimeImmutableType, FloatType, IntegerType, StringType, Type } from "formula-ts-helper";
 import { BooleanControl } from "./controls/BooleanControl";
 import { IntegerControl } from "./controls/IntegerControl";
 import { StringControl } from "./controls/StringControl";
 import { FloatControl } from "./controls/FloatControl";
 import { FormulaControl } from "./controls/FormulaControl";
+import { DateTimeImmutableControl } from "./controls/DateTimeImmutableControl";
+import { DateIntervalControl } from "./controls/DateIntervalControl";
 
 export type SpecificConstantValueParser = (type: Type, value?: string) => FormulaControl<any> | undefined;
 
@@ -34,18 +36,21 @@ function parseInbuiltConstantValue(type: Type, value?: string): FormulaControl<a
   let control = null;
   if (type instanceof BooleanType) {
     control = new BooleanControl();
-    if (value) control.setFromSource(value);
   } else if (type instanceof IntegerType) {
     control = new IntegerControl();
-    if (value) control.setFromSource(value);
   } else if (type instanceof FloatType) {
     control = new FloatControl();
-    if (value) control.setFromSource(value);
   } else if (type instanceof StringType) {
     control = new StringControl();
-    if (value) control.value = value;
+  } else if (type instanceof DateTimeImmutableType) {
+    control = new DateTimeImmutableControl();
+  } else if (type instanceof DateIntervalType) {
+    control = new DateIntervalControl();
   } else {
     return undefined;
+  }
+  if (value !== undefined) {
+    control.setFromSource(value);
   }
   return control;
 }

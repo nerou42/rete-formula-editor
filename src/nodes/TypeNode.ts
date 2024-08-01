@@ -5,6 +5,7 @@ import { Option, SelectControl } from '../controls/SelectControl';
 import { DataflowEngine } from 'rete-engine';
 import { FormulaNode } from './FormulaNode';
 import { AdvancedSocket } from 'rete-advanced-sockets-plugin';
+import { WrapperType } from '../WrapperType';
 
 export type TypeFactory<T extends TypeValidators> = {
   inputs: Record<keyof T, () => ClassicPreset.Input<any>>;
@@ -23,7 +24,7 @@ export class TypeNode extends FormulaNode {
   private selectedType: TypeMeta;
   private readonly availableTypes: TypeMeta[];
   private readonly engine: DataflowEngine<FormulaScheme>;
-  private readonly outputSocket: AdvancedSocket<Type>;
+  private readonly outputSocket: AdvancedSocket<WrapperType>;
 
   constructor(availableTypes: TypeMeta[], engine: DataflowEngine<FormulaScheme>) {
     super('Type');
@@ -49,7 +50,7 @@ export class TypeNode extends FormulaNode {
       window.setTimeout(() => this.update()); // delay call to uipdate until node is initilized
     })
     this.addControl('type', selectControl);
-    this.outputSocket = new AdvancedSocket<Type>(new TypeType(new NeverType()));
+    this.outputSocket = new AdvancedSocket<WrapperType>(new WrapperType(new TypeType(new NeverType()), false));
     const output = new ClassicPreset.Output(this.outputSocket);
     this.addOutput('output', output);
   }
@@ -98,9 +99,9 @@ export class TypeNode extends FormulaNode {
     try {
       this.engine.reset();
       const inputs = await this.engine.fetchInputs(this.id);
-      this.outputSocket.type = this.buildType(inputs)
+      this.outputSocket.type = new WrapperType(this.buildType(inputs))
     } catch (e) {
-      this.outputSocket.type = new TypeType(new NeverType());
+      this.outputSocket.type = new WrapperType(new TypeType(new NeverType()));
     }
   }
 
